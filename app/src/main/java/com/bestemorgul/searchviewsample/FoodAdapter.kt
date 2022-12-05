@@ -5,15 +5,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 
-class FoodAdapter(var foodList: List<FoodModel>) :
+class FoodAdapter(private var foodList: List<FoodModel>) :
     RecyclerView.Adapter<FoodAdapter.FoodViewHolder>() {
 
         inner class FoodViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val foodImage : ImageView = itemView.findViewById(R.id.foodImg)
             val foodTitle : TextView = itemView.findViewById(R.id.titleTv)
-
+            val foodDesc : TextView = itemView.findViewById(R.id.foodDesc)
+            val constraintLayout : ConstraintLayout = itemView.findViewById(R.id.constraintLayout)
         }
 
     fun setFilteredList (foodList: List<FoodModel>) {
@@ -28,8 +30,18 @@ class FoodAdapter(var foodList: List<FoodModel>) :
     }
 
     override fun onBindViewHolder(holder: FoodViewHolder, position: Int) {
-        holder.foodImage.setImageResource(foodList[position].image)
-        holder.foodTitle.text = foodList[position].title
+        val foodData = foodList[position]
+        holder.foodImage.setImageResource(foodData.image)
+        holder.foodTitle.text = foodData.title
+        holder.foodDesc.text = foodData.description
+
+        val isExpandable : Boolean = foodData.isExpandable
+        holder.foodDesc.visibility = if(isExpandable) View.VISIBLE else View.GONE
+
+        holder.constraintLayout.setOnClickListener {
+            foodData.isExpandable = !foodData.isExpandable
+            notifyItemChanged(position)
+        }
     }
 
     override fun getItemCount(): Int {
